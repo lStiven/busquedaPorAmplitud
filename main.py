@@ -66,8 +66,6 @@ def recorrer(ambiente):
         if (c.estaVacia()):
             break
 
-def limites(matriz, x, y):
-    pass
     
 def run():
    
@@ -82,5 +80,6 @@ if __name__ == "__main__":
     key = 2
     ganon = 3
     door = 4
+
     link = 5
     run()
