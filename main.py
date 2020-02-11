@@ -11,7 +11,7 @@ def findLink(matriz):
                 y = j
                 # crear un objeto tipo Nodo
                 n = Nodo()
-                n.initialState(x,y, None, '', None, 1)
+                n.initialState(x,y, None, None, None, 1, 0)
                 # agregarlo a la cola como Raiz del arbol
                 c.agregar(n)
                 visitados.append(n)
@@ -21,7 +21,7 @@ def findLink(matriz):
 # leer archivo de texto
 def leerMatriz():
     # abrir el archivo
-    matriz = open('archivo.txt', 'r')
+    matriz = open('test.txt', 'r')
     # crear diccionario para almacenar la matriz
     tablero = {}
     # guarda cada linea de la matriz separando por salto de linea
@@ -44,21 +44,28 @@ def leerMatriz():
     matriz.close()
     return tablero
 
-def checkNode(lista, x, y):
-    # revisa si se ha pasado por las coordenadas dadas
+def checkNode(lista, x, y, padre):
+    # si el nodo no se ha creado anteriormente, retornara False
+    # si el nodo ya se ha generado, revisa quien es su padre para evitar devolverse
     for i in lista:
         if (x == i._x and y == i._y):
-            return True
+            if(i._id == padre):
+                return True
     return False
     
+def showWay(listaVisitados, nodo):
+    pass
+
 
 def findKey(ambiente):
-    expand = False
-    padre = None
+    padre = 0
     prof = None
+    id = 0
+    expand = False
     while (True):
         try:
             p = c.quitar()
+            padre = p._id
         except IndexError:
             print('Link se encuentra encerrado')
             break
@@ -67,53 +74,74 @@ def findKey(ambiente):
             find = True
             break
         # verificar que no se salga de los limites del tablero
-        if (p._x-1 >= 0):
-            ''' verifica si puede avanzar en las cuatro cardinalidades con el siguiente orden de prioridad:
+        ''' verifica si puede avanzar en las cuatro cardinalidades con el siguiente orden de prioridad:
             up, left, down, right. Tambien busca si ya paso por este nodo, de ser asi, no agrega este camino
             a la cola '''
-            
-            if ((ambiente[p._x - 1][p._y] == way or ambiente[p._x - 1][p._y] == key) and not checkNode(visitados, p._x-1, p._y)):
-                
+
+        if (p._x-1 >= 0):            
+            if ((ambiente[p._x - 1][p._y] == way or ambiente[p._x - 1][p._y] == key)):
+
+                id += 1
                 n = Nodo()
-                n.initialState(p._x - 1, p._y, padre, 'up', prof, 1)
+                n.initialState(p._x - 1, p._y, padre, 'up', prof, 1, id)
                 c.agregar(n)
                 visitados.append(n)
 
         if (p._y-1 >= 0):
-            if ((ambiente[p._x][p._y -1] == way or ambiente[p._x][p._y -1] == key) and not checkNode(visitados, p._x, p._y-1)):
-                
+            if ((ambiente[p._x][p._y - 1] == way or ambiente[p._x][p._y -1] == key)):
+
+                id += 1
                 n = Nodo()
-                n.initialState(p._x, p._y - 1, padre, 'left', prof, 1)
+                n.initialState(p._x, p._y - 1, padre, 'left', prof, 1, id)
                 c.agregar(n)
                 visitados.append(n)
         
         if (p._x+1 < len(ambiente)):
-            if ((ambiente[p._x + 1][p._y] == way or ambiente[p._x + 1][p._y] == key) and not checkNode(visitados, p._x+1, p._y)):
-                
+            if ((ambiente[p._x + 1][p._y] == way or ambiente[p._x + 1][p._y] == key)):
+
+                id += 1
                 n = Nodo()
-                n.initialState(p._x + 1, p._y, padre, 'down', prof, 1)
+                n.initialState(p._x + 1, p._y, padre, 'down', prof, 1, id)
                 c.agregar(n)
                 visitados.append(n)
 
         if (p._y+1 < len(ambiente[0])):
-            if ((ambiente[p._x][p._y + 1] == way or ambiente[p._x][p._y + 1] == key) and not checkNode(visitados, p._x, p._y+1)):
-                
+            if ((ambiente[p._x][p._y + 1] == way or ambiente[p._x][p._y + 1] == key)):
+
+                id += 1
                 n = Nodo()
-                n.initialState(p._x, p._y + 1, padre, 'right', prof, 1)
+                n.initialState(p._x, p._y + 1, padre, 'right', prof, 1, id)
                 c.agregar(n)
                 visitados.append(n)
-                
-        #print(padre)
+
+        
     print(f'X -> {p._x}')
     print(f'Y -> {p._y}')
     print(f'tamanio de la cola {c.size()}')
     print(f'visitados:\n{len(visitados)}')
+    camino = []
+    camino.insert(0, p._y)
+    camino.insert(0, p._x)
+    padre = p._padre
+    while(padre != None):
+        for i in visitados:
+            if (i._id == padre):
+                camino.insert(0, i._y)
+                camino.insert(0, i._x)
+                padre = i._padre
+                break
+    
+    i = 0
+    while (i < len(camino)):
+        print(f'({camino[i]},{camino[i+1]})')
+        i += 2
 
 def run():
    
     ambiente = leerMatriz()
     findLink(ambiente)
     findKey(ambiente)
+
 
 if __name__ == "__main__":
     c = Cola()
