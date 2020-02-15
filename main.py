@@ -36,7 +36,6 @@ def findLink(matriz, visitados, cola):
                 # crear un objeto tipo Nodo
                 n = Nodo()
                 n.initialState(i,j, None, None, None, 1, 0, matriz)
-                imprimir(n._estado)
                 # agregarlo a la cola como Raiz del arbol
                 cola.agregar(n)
                 visitados.append(n)
@@ -124,12 +123,12 @@ def findKey(goal, visitados, cola):
         if (p._estado[p._x][p._y] == goal):
             p._estado[p._x][p._y] = link
             meta.initialState(p._x, p._y, p._padre, p._ope, p._prof, p._cost, p._id, p._estado)
+            imprimir(meta._estado)
             info(p, colaKey, visitadosKey)
             del p
             return True
         else:
             p._estado[p._x][p._y] = link
-            imprimir(p._estado)
             
         # verificar que no se salga de los limites del tablero
         # verifica si puede avanzar en las cuatro cardinalidades con el siguiente orden de prioridad:
@@ -185,10 +184,15 @@ def run():
    
     ambiente = leerMatriz()
     ambiente = findLink(ambiente, visitadosKey, colaKey)
+    imprimir(ambiente)
     if findKey(key, visitadosKey, colaKey):
+        print(makeWay(visitadosKey, meta), '\n')
         # al encontrar la llave, se crea una puerta con coordenadas aleatorias
         buildDoor(ambiente)
-        print(makeWay(visitadosKey, meta))
+        imprimir(ambiente)
+        ambiente = findLink(ambiente, visitadosDoor, colaDoor)
+        findKey(door, visitadosDoor, colaDoor)
+        print(makeWay(visitadosDoor, meta))
 
 def imprimir(matriz):
     for i in range(len(matriz)):
