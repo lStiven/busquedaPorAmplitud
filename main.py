@@ -116,7 +116,7 @@ def findKey(goal, visitados, cola):
             padre = p._id
         except IndexError:
             print('Link se encuentra encerrado')
-            print(info(p))
+            print(info(p, cola, visitados))
             return False
         
         # condicional si encuentra la llave
@@ -124,7 +124,7 @@ def findKey(goal, visitados, cola):
             p._estado[p._x][p._y] = link
             meta.initialState(p._x, p._y, p._padre, p._ope, p._prof, p._cost, p._id, p._estado)
             imprimir(meta._estado)
-            info(p, colaKey, visitadosKey)
+            info(p, cola, visitados)
             del p
             return True
         else:
@@ -134,7 +134,9 @@ def findKey(goal, visitados, cola):
         # verifica si puede avanzar en las cuatro cardinalidades con el siguiente orden de prioridad:
         # up, left, down, right. Tambien busca si ya paso por este nodo, de ser asi, no agrega este camino
         # a la cola
+        expand = False
         if (move(p._estado, p, p._x-1, p._y, goal, 'up', visitados)):
+            expand = True
             temp = p._estado
             temp[p._x][p._y] = way
             _id += 1
@@ -146,6 +148,7 @@ def findKey(goal, visitados, cola):
             del n
 
         if (move(p._estado, p, p._x, p._y-1, goal, 'left', visitados)):
+            expand = True
             temp = p._estado
             temp[p._x][p._y] = way
             _id += 1
@@ -157,6 +160,7 @@ def findKey(goal, visitados, cola):
             del n
         
         if (move(p._estado, p, p._x+1, p._y, goal, 'down', visitados)):
+            expand = True
             temp = p._estado
             temp[p._x][p._y] = way
             _id += 1
@@ -168,6 +172,7 @@ def findKey(goal, visitados, cola):
             del n
 
         if (move(p._estado, p, p._x, p._y+1, goal, 'right', visitados)):
+            expand = True
             temp = p._estado
             temp[p._x][p._y] = way
             _id += 1
@@ -178,7 +183,8 @@ def findKey(goal, visitados, cola):
             del temp
             del n
 
-        del p
+        if not expand:
+            p._estado[p._x][p._y] = way
 
 def run():
    
